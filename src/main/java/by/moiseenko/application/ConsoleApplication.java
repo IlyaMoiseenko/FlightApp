@@ -18,30 +18,29 @@ public class ConsoleApplication {
     private final Writer writer = new ConsoleWriter();
 
     public void start() {
+        List<Ticket> tickets = ticketService.getAllByDestinations("Владивосток", "Тель-Авив");
 
         /*
-        Расчет минимального времени полет
+        Расчет минимального времени полета
         */
-        Map<String, Integer> resultMap = calculateMinFlightDuration();
+        Map<String, Integer> resultMap = calculateMinFlightDuration(tickets);
         for (Map.Entry<String, Integer> entry : resultMap.entrySet()) {
-            System.out.println("Минимальное время полета с авиаперевозчиком " + entry.getKey() + ": " + entry.getValue() + " минут");
+            writer.write("Минимальное время полета с авиаперевозчиком " + entry.getKey() + ": " + entry.getValue() + " минут");
         }
 
         /*
         Расчет разницы между средней ценой и медианой
         */
-        writer.write("Разница между средней ценой и медианой: " + differenceBetweenMedianAndAveragePrice());
+        writer.write("Средняя цена: " + ticketService.getAveragePrice(tickets));
+        writer.write("Медиана: " + ticketService.getMedian(tickets));
+        writer.write("Разница между средней ценой и медианой: " + differenceBetweenMedianAndAveragePrice(tickets));
     }
 
-    public Map<String, Integer> calculateMinFlightDuration() {
-        List<Ticket> tickets = ticketService.getAll();
-
+    public Map<String, Integer> calculateMinFlightDuration(List<Ticket> tickets) {
         return ticketService.getMinFlightDuration(tickets);
     }
 
-    public Double differenceBetweenMedianAndAveragePrice() {
-        List<Ticket> tickets = ticketService.getAll();
-
+    public Double differenceBetweenMedianAndAveragePrice(List<Ticket> tickets) {
         double averagePrice = ticketService.getAveragePrice(tickets);
         double medianPrice = ticketService.getMedian(tickets);
 

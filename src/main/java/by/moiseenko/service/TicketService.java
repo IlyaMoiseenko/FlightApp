@@ -11,6 +11,7 @@ import by.moiseenko.repository.TicketRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TicketService {
 
@@ -18,6 +19,12 @@ public class TicketService {
 
     public List<Ticket> getAll() {
         return ticketRepository.findAll();
+    }
+
+    public List<Ticket> getAllByDestinations(String from, String to) {
+        List<Ticket> tickets = this.getAll();
+
+        return this.sortByDestinations(from, to, tickets);
     }
 
     private int getFlightDuration(Ticket ticket) {
@@ -47,7 +54,6 @@ public class TicketService {
                     carrier,
                     Math.min(duration, result.getOrDefault(carrier, minDuration))
             );
-
         }
 
         return result;
@@ -83,5 +89,12 @@ public class TicketService {
 
     public Double calculateDifferenceBetweenMedianAndAveragePrice(double medianPrice, double averagePrice) {
         return averagePrice - medianPrice;
+    }
+
+    private List<Ticket> sortByDestinations(String from, String to, List<Ticket> tickets) {
+        return tickets.stream()
+                .filter(ticket ->
+                        ticket.getOrigin_name().equalsIgnoreCase(from) && ticket.getDestination_name().equalsIgnoreCase(to))
+                .collect(Collectors.toList());
     }
 }
